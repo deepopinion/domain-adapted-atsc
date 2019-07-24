@@ -1,16 +1,27 @@
 import json
 from tqdm import tqdm
 import spacy
+import argparse
+
+parser = argparse.ArgumentParser(description='Generate finetuning corpus for restaurants.')
+
+parser.add_argument('--large',
+                    action='store_true',
+                    help='export large corpus (10 mio), default is 1 mio')
+args = parser.parse_args()
+
+max_sentences = int(10e5)
+review_limit = int(125000)
+if args.large:
+    review_limit = int(1250000)  # for 10 Mio Corpus
+    max_sentences = int(10e6)  # for 10 Mio corpus
 
 nlp = spacy.load('en_core_web_sm')
 nlp.add_pipe(nlp.create_pipe('sentencizer'))
 fn = 'data/raw/review.json'
 reviews = []
 
-# 4 million reviews to generate about minimum 25 mio sentences
-review_limit = int(125000)
-# review_limit = int(1250000)  # for 10 Mio Corpus
-
+# 4 million reviews to generate about minimum 10 mio sentences
 with open(fn) as data_file:
     counter = 0
     for line in data_file:
@@ -38,9 +49,6 @@ nr_sents = sum([len(s) for s in sentences])
 print(f'Segmented {nr_sents} restaurant sentences')
 
 # Save to file
-max_sentences = int(10e5)
-# max_sentences = int(10e6)  # for 10mio corpus
-
 fn_out = f'data/transformed/restaurant_corpus_{max_sentences}.txt'
 with open(fn_out, "w") as f:
     sent_count = 0
@@ -52,6 +60,5 @@ with open(fn_out, "w") as f:
 
         if sent_count >= max_sentences:
             break
-
 
 print(f'Done writing to {fn_out}')
