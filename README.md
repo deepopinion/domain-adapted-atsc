@@ -48,13 +48,8 @@ into
 and unpack the archives.
 Create the preprocessed datasets using the following commands
  
-    python prepare_semeval_datasets.py --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Restaurants_Train_v2.xml"
-    python prepare_semeval_datasets.py --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Laptop_Train_v2.xml"
-    
-    python prepare_semeval_datasets.py --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Restaurants_Test_Gold.xml"
-    python prepare_semeval_datasets.py --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Laptops_Test_Gold.xml"
-    
-    
+Laptops
+
     # laptops    
     python prepare_semeval_datasets.py \
     --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Laptop_Train_v2.xml" \
@@ -100,8 +95,32 @@ Restaurants
     --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Restaurants_Test_Gold.xml" \
     --output_dir data/transformed/restaurants_noconfl \
     --noconfl
-    
 
+Mixed
+
+    # mixing restaurants and laptops    
+    python prepare_semeval_datasets.py \
+    --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Restaurants_Train_v2.xml" \
+    "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Laptop_Train_v2.xml" \
+    --output_dir data/transformed/mixed \
+    --istrain
+    
+    python prepare_semeval_datasets.py \
+    --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Restaurants_Test_Gold.xml" \
+    "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Laptops_Test_Gold.xml" \
+    --output_dir data/transformed/mixed
+
+    # mixed no conflicting
+    python prepare_semeval_datasets.py \
+    --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Restaurants_Train_v2.xml" \
+    "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Laptop_Train_v2.xml" \
+    --output_dir data/transformed/mixed_noconfl \
+    --istrain --noconfl
+    
+    python prepare_semeval_datasets.py \
+    --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Restaurants_Test_Gold.xml" \
+    "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Laptops_Test_Gold.xml" \
+    --output_dir data/transformed/mixed_noconfl --noconfl
     
     
     

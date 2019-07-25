@@ -1,3 +1,4 @@
+import os
 import argparse
 import xml.etree.ElementTree as ET
 import random
@@ -178,10 +179,17 @@ def export_dataset_to_xml(fn, sentence_pairs, labels):
 def save_dataset_to_tsv(fn, data):
     pass
 
+sentence_pairs_train_mixed = []
+sentence_pairs_trainsplit_mixed = []
+sentence_pairs_dev_mixed = []
+sentence_pairs_test_mixed = []
+
+labels_train_mixed = []
+labels_trainsplit_mixed = []
+labels_dev_mixed = []
+labels_test_mixed = []
 
 for fn in args.files:
-
-    import os
 
     print(args.output_dir)
     if not os.path.exists(args.output_dir):
@@ -194,21 +202,42 @@ for fn in args.files:
     sentence_pairs_train, labels_train, counts_train = create_sentence_pairs(sents_train, ats_train)
 
     if args.istrain:
-        print_dataset_stats('Train', sents_train, sentence_pairs_train, counts_train)
-        export_dataset_to_xml(args.output_dir + '/train.xml', sentence_pairs_train, labels_train)
-    else:
-        print_dataset_stats('Test', sents_train, sentence_pairs_train, counts_train)
-        export_dataset_to_xml(args.output_dir + '/test.xml', sentence_pairs_train, labels_train)
-
-    if args.istrain:
         sents_dev, sents_trainsplit = split_shuffle_array(.1, sents_train, 41)
         ats_dev, ats_trainsplit = split_shuffle_array(.1, ats_train, 41)
 
         sentence_pairs_dev, labels_dev, counts_dev = create_sentence_pairs(sents_dev, ats_dev)
         sentence_pairs_trainsplit, labels_trainsplit, counts_trainsplit = create_sentence_pairs(sents_trainsplit,
                                                                                                 ats_trainsplit)
-        export_dataset_to_xml(args.output_dir + '/dev.xml', sentence_pairs_dev, labels_dev)
-
+        print_dataset_stats('Train', sents_train, sentence_pairs_train, counts_train)
         print_dataset_stats('Dev', sents_dev, sentence_pairs_dev, counts_dev)
         print_dataset_stats('TrainSplit', sents_trainsplit, sentence_pairs_trainsplit, counts_trainsplit)
-        export_dataset_to_xml(args.output_dir + '/train_split.xml', sentence_pairs_trainsplit, labels_trainsplit)
+
+        sentence_pairs_trainsplit_mixed += sentence_pairs_trainsplit
+        sentence_pairs_train_mixed += sentence_pairs_train
+        sentence_pairs_dev_mixed += sentence_pairs_dev
+
+        labels_trainsplit_mixed += labels_trainsplit
+        labels_train_mixed += labels_train
+        labels_dev_mixed += labels_dev
+
+        if len(args.files) == 1:
+            export_dataset_to_xml(args.output_dir + '/train.xml', sentence_pairs_train, labels_train)
+            export_dataset_to_xml(args.output_dir + '/dev.xml', sentence_pairs_dev, labels_dev)
+            export_dataset_to_xml(args.output_dir + '/train_split.xml', sentence_pairs_trainsplit, labels_trainsplit)
+    else:
+
+        sentence_pairs_test_mixed += sentence_pairs_train
+        labels_test_mixed += labels_train
+
+        print_dataset_stats('Test', sents_train, sentence_pairs_train, counts_train)
+        if len(args.files) == 1:
+            export_dataset_to_xml(args.output_dir + '/test.xml', sentence_pairs_train, labels_train)
+
+if len(args.files) > 1:
+
+    if args.istrain:
+        export_dataset_to_xml(args.output_dir + '/train.xml', sentence_pairs_train_mixed, labels_train_mixed)
+        export_dataset_to_xml(args.output_dir + '/dev.xml', sentence_pairs_dev_mixed, labels_dev_mixed)
+        export_dataset_to_xml(args.output_dir + '/train_split.xml', sentence_pairs_trainsplit_mixed, labels_trainsplit_mixed)
+    else:
+        export_dataset_to_xml(args.output_dir + '/test.xml', sentence_pairs_test_mixed, labels_test_mixed)
