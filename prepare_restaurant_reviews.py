@@ -11,9 +11,9 @@ parser.add_argument('--large',
 args = parser.parse_args()
 
 max_sentences = int(10e5)
-review_limit = int(125000)
+review_limit = int(150000)
 if args.large:
-    review_limit = int(1250000)  # for 10 Mio Corpus
+    review_limit = int(1500000)  # for 10 Mio Corpus
     max_sentences = int(10e6)  # for 10 Mio corpus
 
 nlp = spacy.load('en_core_web_sm')
@@ -53,9 +53,14 @@ fn_out = f'data/transformed/restaurant_corpus_{max_sentences}.txt'
 with open(fn_out, "w") as f:
     sent_count = 0
     for sents in tqdm(sentences):
-        if len(sents) >= 2:
-            sent_count += len(sents)
-            str_to_write = "\n" + "\n".join(sents) + "\n"
+        real_sents = []
+        for s in sents:
+            x = s.replace(' ', '').replace('\n', '')
+            if x != '':
+                real_sents.append(s.replace('\n', ''))
+        if len(real_sents) >= 2:
+            sent_count += len(real_sents)
+            str_to_write = "\n" + "\n".join(real_sents) + "\n"
             f.write(str_to_write)
 
         if sent_count >= max_sentences:

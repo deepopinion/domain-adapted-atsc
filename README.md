@@ -27,14 +27,18 @@ To prepare the data for language model finetuning run the following python scrip
     python prepare_restaurant_reviews.py
     python prepare_restaurant_reviews.py --large  # takes some time to finish
 
+Measure the number of non-zero lines to get the exact amount of sentences trained on
+    
+    cat data/transformed/restaurant_corpus_1000000.txt | sed '/^\s*$/d' | wc -l
+    # Rename the corpora files postfix to the actual number of sentences
+    # e.g  restaurant_corpus_1000000.txt -> restaurant_corpus_1000004.txt
+
 Concatenate laptop corpus and the small restaurant corpus to create the mixed corpus (restaurants + laptops)
 
     cd data/transformed
-    cat laptop_corpus_1011255.txt restaurant_corpus_998425.txt > mixed_corpus.txt
+    cat laptop_corpus_1011255.txt restaurant_corpus_1000004.txt > mixed_corpus.txt
 
-Measure the number of non-zero lines to get the exact amount of sentences trained on
-    
-    cat data/transformed/example_corpus.txt | sed '/^\s*$/d' | wc -l
+
 
 
 ### Preparing SemEval 2014 Dataset for Experiments
