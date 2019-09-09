@@ -1,4 +1,4 @@
-# Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification
+# Adapt or Get Left Behind: Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification
 code for our 2019 paper: "Adapt or Get Left Behind:
 Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification"
 
@@ -28,7 +28,7 @@ To prepare the data for language model finetuning run the following python scrip
     python prepare_restaurant_reviews.py
     python prepare_restaurant_reviews.py --large  # takes some time to finish
 
-Measure the number of non-zero lines to get the exact amount of sentences trained on
+Measure the number of non-zero lines to get the exact amount of sentences
     
     cat data/transformed/restaurant_corpus_1000000.txt | sed '/^\s*$/d' | wc -l
     # Rename the corpora files postfix to the actual number of sentences
@@ -104,4 +104,9 @@ Down-stream task-specific finetuning was performed with an adaption to this scri
     
 If you use this work, please cite our paper using the following Bibtex tag:
 
-    # TODO: add citation
+    @article{rietzler2019adapt,
+       title={Adapt or Get Left Behind: Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification},
+       author={Rietzler, Alexander and Stabinger, Sebastian and Opitz, Paul and Engl, Stefan},
+       journal={arXiv preprint arXiv:1908.11860},
+       year={2019}
+    }
