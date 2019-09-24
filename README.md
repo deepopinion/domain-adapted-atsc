@@ -1,5 +1,8 @@
-# State of the art in Aspect Based Sentiment Analysis
-code for our 2019 paper: "State of the Art in Aspect-based Sentiment Analysis"
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/adapt-or-get-left-behind-domain-adaptation/aspect-based-sentiment-analysis-on-semeval)](https://paperswithcode.com/sota/aspect-based-sentiment-analysis-on-semeval?p=adapt-or-get-left-behind-domain-adaptation)
+
+# Adapt or Get Left Behind: Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification
+code for our 2019 paper: "Adapt or Get Left Behind:
+Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification"
 
 ### Installation
     
@@ -10,7 +13,7 @@ code for our 2019 paper: "State of the Art in Aspect-based Sentiment Analysis"
 ### Preparing data for BERT Language Model Finetuning
 
 We make use of two publicly available research datasets
-for the semeval domains laptops and restaurants:
+for the domains laptops and restaurants:
 
 * Amazon electronics reviews and metadata for filtering laptop reviews only:
     * Per-category files, both reviews (1.8 GB) and metadata (187 MB) - ask jmcauley to get the files, 
@@ -27,7 +30,7 @@ To prepare the data for language model finetuning run the following python scrip
     python prepare_restaurant_reviews.py
     python prepare_restaurant_reviews.py --large  # takes some time to finish
 
-Measure the number of non-zero lines to get the exact amount of sentences trained on
+Measure the number of non-zero lines to get the exact amount of sentences
     
     cat data/transformed/restaurant_corpus_1000000.txt | sed '/^\s*$/d' | wc -l
     # Rename the corpora files postfix to the actual number of sentences
@@ -38,12 +41,9 @@ Concatenate laptop corpus and the small restaurant corpus to create the mixed co
     cd data/transformed
     cat laptop_corpus_1011255.txt restaurant_corpus_1000004.txt > mixed_corpus.txt
 
+### Preparing SemEval 2014 Task 4 Dataset for Experiments
 
-
-
-### Preparing SemEval 2014 Dataset for Experiments
-
-Download all the SemEval 2014 dataset from:
+Download all the SemEval 2014 Task 4 datasets from:
 <http://metashare.ilsp.gr:8080/repository/search/?q=semeval+2014>
 into 
 
@@ -54,17 +54,9 @@ Create the preprocessed datasets using the following commands
  
 Laptops
 
-    # laptops    
-    python prepare_semeval_datasets.py \
-    --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Laptop_Train_v2.xml" \
-    --output_dir data/transformed/laptops \
-    --istrain
+    # laptops
     
-    python prepare_semeval_datasets.py \
-    --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Laptops_Test_Gold.xml" \
-    --output_dir data/transformed/laptops
-    
-    # laptops no conflicting
+    # laptops without conflict label
     python prepare_semeval_datasets.py \
     --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Laptop_Train_v2.xml" \
     --output_dir data/transformed/laptops_noconfl \
@@ -77,18 +69,8 @@ Laptops
     --noconfl
     
 Restaurants
-
-    # restaurants    
-    python prepare_semeval_datasets.py \
-    --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Restaurants_Train_v2.xml" \
-    --output_dir data/transformed/restaurants \
-    --istrain
     
-    python prepare_semeval_datasets.py \
-    --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Restaurants_Test_Gold.xml" \
-    --output_dir data/transformed/restaurants
-    
-    # restaurants no conflicting
+    # restaurants without conflict label
     python prepare_semeval_datasets.py \
     --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Restaurants_Train_v2.xml" \
     --output_dir data/transformed/restaurants_noconfl \
@@ -102,19 +84,7 @@ Restaurants
 
 Mixed
 
-    # mixing restaurants and laptops    
-    python prepare_semeval_datasets.py \
-    --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Restaurants_Train_v2.xml" \
-    "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Laptop_Train_v2.xml" \
-    --output_dir data/transformed/mixed \
-    --istrain
-    
-    python prepare_semeval_datasets.py \
-    --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Restaurants_Test_Gold.xml" \
-    "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Laptops_Test_Gold.xml" \
-    --output_dir data/transformed/mixed
-
-    # mixed no conflicting
+    # mixed without conflict label
     python prepare_semeval_datasets.py \
     --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Restaurants_Train_v2.xml" \
     "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Laptop_Train_v2.xml" \
@@ -126,5 +96,19 @@ Mixed
     "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Laptops_Test_Gold.xml" \
     --output_dir data/transformed/mixed_noconfl --noconfl
     
+## BERT Language Model Finetuning and Down-Stream Classification
+
+The LM finetuning is performed with a script from the huggingface/pytorch-transformers repository:
+* https://github.com/huggingface/pytorch-transformers/blob/v1.0.0/examples/lm_finetuning/finetune_on_pregenerated.py
+
+Down-stream task-specific finetuning was performed with an adaption to this script:
+* https://github.com/huggingface/pytorch-transformers/blob/v1.0.0/examples/run_glue.py
     
-    
+If you use this work, please cite our paper using the following Bibtex tag:
+
+    @article{rietzler2019adapt,
+       title={Adapt or Get Left Behind: Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification},
+       author={Rietzler, Alexander and Stabinger, Sebastian and Opitz, Paul and Engl, Stefan},
+       journal={arXiv preprint arXiv:1908.11860},
+       year={2019}
+    }
