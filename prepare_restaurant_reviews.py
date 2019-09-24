@@ -55,9 +55,12 @@ with open(fn_out, "w") as f:
     for sents in tqdm(sentences):
         real_sents = []
         for s in sents:
-            x = s.replace(' ', '').replace('\n', '')
+            x = s.replace(' ', '').replace('\n', '').replace('\u200d', '').replace('\u200b', '')
             if x != '':
-                real_sents.append(s.replace('\n', ''))
+                if s=="By far the best Avacado bread I have ever had.":
+                    print(sents)
+                    pass
+                real_sents.append(s.replace('\n', '').replace('\u200d', '').replace('\u200b', ''))
         if len(real_sents) >= 2:
             sent_count += len(real_sents)
             str_to_write = "\n" + "\n".join(real_sents) + "\n"
