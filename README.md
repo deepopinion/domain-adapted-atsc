@@ -1,8 +1,8 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/adapt-or-get-left-behind-domain-adaptation/aspect-based-sentiment-analysis-on-semeval)](https://paperswithcode.com/sota/aspect-based-sentiment-analysis-on-semeval?p=adapt-or-get-left-behind-domain-adaptation)
 
 # Adapt or Get Left Behind: Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification
-code for our 2019 paper: "Adapt or Get Left Behind:
-Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification"
+code for our 2019 paper: ["Adapt or Get Left Behind:
+Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification"](https://arxiv.org/abs/1908.11860)
 
 ### Installation
     
@@ -95,15 +95,31 @@ Mixed
     --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Restaurants_Test_Gold.xml" \
     "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Laptops_Test_Gold.xml" \
     --output_dir data/transformed/mixed_noconfl --noconfl
-    
-## BERT Language Model Finetuning and Down-Stream Classification
+
+## Release of BERT language models finetuned on a specific domain
+
+* [Bert-Ada Laptops](https://drive.google.com/file/d/1I2hOyi120Fwn2cApfVwjaOw782IGjWS8/view?usp=sharing)
+* [Bert-Ada Restaurants](https://drive.google.com/file/d/1DmVrhKQx74p1U5c7oq6qCTVxGIpgvp1c/view?usp=sharing)
+* [Bert-Ada Joint (Restaurant + Laptops)](https://drive.google.com/file/d/1LqscXdlzKxx7XPPcWXRGRwgM8agnH4kM/view?usp=sharing)
+
+The models should be compatible with the [huggingface/pytorch-transformers](https://github.com/huggingface/pytorch-transformers) module version > 1.0.
+The models are compressed with tar.xz and need to be decrompessed before usage.
+
+
+## BERT Language Model Finetuning
 
 The LM finetuning is performed with a script from the huggingface/pytorch-transformers repository:
 * https://github.com/huggingface/pytorch-transformers/blob/v1.0.0/examples/lm_finetuning/finetune_on_pregenerated.py
 
+## Down-Stream Classification
 Down-stream task-specific finetuning was performed with an adaption to this script:
 * https://github.com/huggingface/pytorch-transformers/blob/v1.0.0/examples/run_glue.py
-    
+
+Check the README in the "downstream_classification" folder for how to train the BERT-ADA models
+on the downstream task.
+
+## Citation
+
 If you use this work, please cite our paper using the following Bibtex tag:
 
     @article{rietzler2019adapt,
