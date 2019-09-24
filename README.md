@@ -98,9 +98,9 @@ Mixed
 
 ## Release of BERT language models finetuned on a specific domain
 
-* [Bert-Ada Laptops](https://drive.google.com/file/d/1I2hOyi120Fwn2cApfVwjaOw782IGjWS8/view?usp=sharing)
-* [Bert-Ada Restaurants](https://drive.google.com/file/d/1DmVrhKQx74p1U5c7oq6qCTVxGIpgvp1c/view?usp=sharing)
-* [Bert-Ada Joint (Restaurant + Laptops)](https://drive.google.com/file/d/1LqscXdlzKxx7XPPcWXRGRwgM8agnH4kM/view?usp=sharing)
+* [BERT-ADA Laptops](https://drive.google.com/file/d/1I2hOyi120Fwn2cApfVwjaOw782IGjWS8/view?usp=sharing)
+* [BERT-ADA Restaurants](https://drive.google.com/file/d/1DmVrhKQx74p1U5c7oq6qCTVxGIpgvp1c/view?usp=sharing)
+* [BERT-ADA Joint (Restaurant + Laptops)](https://drive.google.com/file/d/1LqscXdlzKxx7XPPcWXRGRwgM8agnH4kM/view?usp=sharing)
 
 The models should be compatible with the [huggingface/pytorch-transformers](https://github.com/huggingface/pytorch-transformers) module version > 1.0.
 The models are compressed with tar.xz and need to be decrompessed before usage.
