@@ -682,7 +682,7 @@ def compute_metrics(task_name, preds, labels, sentences=None, error_file=None):
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
-    elif task_name == "semeval2014-tabsa":
+    elif task_name == "semeval2014-atsc":
         return acc_and_f1macro(preds, labels)
     else:
         raise KeyError(task_name)
