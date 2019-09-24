@@ -9,7 +9,7 @@ Restaurants dataset, use the following command.
     --do_train --evaluate_during_training --do_eval \
     --logging_steps 100 --save_steps 1200 --task_name=semeval2014-atsc \
     --seed 42 --do_lower_case \
-    --data_dir=../data/transformed/restaurants \
+    --data_dir=../data/transformed/restaurants_noconfl \
     --output_dir=../data/models/semeval2014-atsc-bert-ada-restaurants-restaurants \
     --max_seq_length=128 --learning_rate 3e-5 --per_gpu_eval_batch_size=32 --per_gpu_train_batch_size=32 \
     --gradient_accumulation_steps=1 --max_steps=1000 --overwrite_output_dir --overwrite_cache --warmup_steps=120 --fp16
