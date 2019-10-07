@@ -179,7 +179,7 @@ def evaluate(args, model, tokenizer, prefix=""):
 
     results = {}
     for eval_task, eval_output_dir in zip(eval_task_names, eval_outputs_dirs):
-        eval_dataset = load_and_cache_examples(args, eval_task, tokenizer, evaluate=True)
+        eval_dataset, _ = load_and_cache_examples(args, eval_task, tokenizer, evaluate=True)
 
         if not os.path.exists(eval_output_dir) and args.local_rank in [-1, 0]:
             os.makedirs(eval_output_dir)
@@ -237,6 +237,10 @@ def evaluate(args, model, tokenizer, prefix=""):
 
 
 def load_and_cache_examples(args, task, tokenizer, evaluate=False):
+    def transform_examples_to_hr(exmpls):
+        examples_hr = ['[CLS] ' + exp.text_a + ' [SEP] ' + exp.text_b + ' [LABEL] ' + exp.label for exp in exmpls]
+        return examples_hr
+
     processor = processors[task]()
     output_mode = output_modes[task]
     # Load data features from cache or dataset file
@@ -245,14 +249,35 @@ def load_and_cache_examples(args, task, tokenizer, evaluate=False):
         list(filter(None, args.model_name_or_path.split('/'))).pop(),
         str(args.max_seq_length),
         str(task)))
+    examples=None
+    tokenized_examples=None
     if os.path.exists(cached_features_file):
         logger.info("Loading features from cached file %s", cached_features_file)
-        features = torch.load(cached_features_file)
+
+        # tmp code for writing out the textual error analysis; comment for training!
+        label_list = processor.get_labels()
+        examples = processor.get_dev_examples(args.data_dir) if evaluate else processor.get_train_examples(
+            args.data_dir)
+        features, tokenized_examples = convert_examples_to_features(examples, label_list, args.max_seq_length,
+                                                                    tokenizer, output_mode,
+                                                                    cls_token_at_end=bool(args.model_type in ['xlnet']),
+                                                                    # xlnet has a cls token at the end
+                                                                    cls_token=tokenizer.cls_token,
+                                                                    sep_token=tokenizer.sep_token,
+                                                                    cls_token_segment_id=2 if args.model_type in [
+                                                                        'xlnet'] else 1,
+                                                                    pad_on_left=bool(args.model_type in ['xlnet']),
+                                                                    # pad on the left for xlnet
+                                                                    pad_token_segment_id=4 if args.model_type in [
+                                                                        'xlnet'] else 0)
+
+        # end tmp
+        # features = torch.load(cached_features_file)
     else:
         logger.info("Creating features from dataset file at %s", args.data_dir)
         label_list = processor.get_labels()
         examples = processor.get_dev_examples(args.data_dir) if evaluate else processor.get_train_examples(args.data_dir)
-        features = convert_examples_to_features(examples, label_list, args.max_seq_length, tokenizer, output_mode,
+        features, tokenized_examples = convert_examples_to_features(examples, label_list, args.max_seq_length, tokenizer, output_mode,
             cls_token_at_end=bool(args.model_type in ['xlnet']),            # xlnet has a cls token at the end
             cls_token=tokenizer.cls_token,
             sep_token=tokenizer.sep_token,
@@ -273,7 +298,7 @@ def load_and_cache_examples(args, task, tokenizer, evaluate=False):
         all_label_ids = torch.tensor([f.label_id for f in features], dtype=torch.float)
 
     dataset = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
-    return dataset
+    return dataset, transform_examples_to_hr(examples) # tokenized_examples, examples, all_label_ids,   # transform_examples_to_hr(examples)
 
 
 def main():
@@ -425,7 +450,7 @@ def main():
 
     # Training
     if args.do_train:
-        train_dataset = load_and_cache_examples(args, args.task_name, tokenizer, evaluate=False)
+        train_dataset, _ = load_and_cache_examples(args, args.task_name, tokenizer, evaluate=False)
         global_step, tr_loss = train(args, train_dataset, model, tokenizer)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
 

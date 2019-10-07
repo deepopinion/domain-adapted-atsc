@@ -12,7 +12,7 @@ Restaurants dataset, use the following command.
     --data_dir=../data/transformed/restaurants_noconfl \
     --output_dir=../data/models/semeval2014-atsc-bert-ada-restaurants-restaurants \
     --max_seq_length=128 --learning_rate 3e-5 --per_gpu_eval_batch_size=32 --per_gpu_train_batch_size=32 \
-    --gradient_accumulation_steps=1 --max_steps=1000 --overwrite_output_dir --overwrite_cache --warmup_steps=120 --fp16
+    --gradient_accumulation_steps=1 --max_steps=800 --overwrite_output_dir --overwrite_cache --warmup_steps=120 --fp16
 
 * Important: Before running this command download the released finetuned models and
 put the into "data/models" folder (see global README of this Repo).
