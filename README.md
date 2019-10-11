@@ -121,19 +121,18 @@ Mixed
 * [BERT-ADA Joint (Restaurant + Laptops)](https://drive.google.com/file/d/1LqscXdlzKxx7XPPcWXRGRwgM8agnH4kM/view?usp=sharing)
 
 The models should be compatible with the [huggingface/pytorch-transformers](https://github.com/huggingface/pytorch-transformers) module version > 1.0.
-The models are compressed with tar.xz and need to be decrompessed before usage.
+The models are compressed with tar.xz and need to be decompressed before usage.
 
 
 ## BERT Language Model Finetuning
 
-The LM finetuning is performed with a script from the huggingface/pytorch-transformers repository:
-* https://github.com/huggingface/pytorch-transformers/blob/v1.0.0/examples/lm_finetuning/finetune_on_pregenerated.py
+
+Check the README in the "finetuning_and_classification" folder for how to finetune the BERT models
+on a domain specific corpus.
 
 ## Down-Stream Classification
-Down-stream task-specific finetuning was performed with an adaption to this script:
-* https://github.com/huggingface/pytorch-transformers/blob/v1.0.0/examples/run_glue.py
 
-Check the README in the "downstream_classification" folder for how to train the BERT-ADA models
+Check the README in the "finetuning_and_classification" folder for how to train the BERT-ADA models
 on the downstream task.
 
 ## Citation
