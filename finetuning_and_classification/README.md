@@ -29,11 +29,11 @@ Down-stream task-specific finetuning code is an adaption to this script:
 In order to train the BERT-ADA Restaurants model on the SemEval 2014 Task 4 Subtask 2
 Restaurants dataset, use the command below:
 
-* Important: Before running this command download the released finetuned models and
+Important: Before running this command download the released finetuned models and
 put the into "data/models" folder (see global README of this Repo).
 Also the pytorch-transformers and apex python modules need to be installed (apex for mixed precision support).
 
-
+    
     python run_glue.py \ 
     --model_type bert \
     --model_name_or_path ../data/models/restaurants_10mio_ep3 \
