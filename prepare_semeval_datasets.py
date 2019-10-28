@@ -5,6 +5,7 @@ import random
 import math
 from collections import Counter
 from utils import semeval2014term_to_aspectsentiment_hr
+from copy import copy, deepcopy
 
 parser = argparse.ArgumentParser(description='Generate finetuning corpus for restaurants.')
 
@@ -29,6 +30,19 @@ parser.add_argument("--output_dir",
                     action="store",
                     default="data/transformed/untitled",
                     help="output dir of the dataset(s)")
+
+parser.add_argument("--upsample",
+                    type=str,
+                    action="store",
+                    default=None,
+                    help="please add a string with 3 numbers like '0.5 0.3 0.2' representing relative numbers of 'POS NEG NEU' adding to 1"
+                         " which represents target distribution - only valid in non-confl case")
+
+parser.add_argument("--seed",
+                    type=int,
+                    action="store",
+                    default=41,
+                    help="random seed, effects on upsampling and validationset")
 
 args = parser.parse_args()
 
@@ -69,10 +83,83 @@ def print_dataset_stats(name, sents, sent_pairs, counts):
     print('#Sentences with minimum 1 label', len(sents))
     print('Label Counts', counts.most_common())
     print('#SentencePairs', len(sent_pairs))
+    print('POS%', counts['POS'] / len(sent_pairs))
+    print('NEG%', counts['NEG'] / len(sent_pairs))
+    print('NEU%', counts['NEU'] / len(sent_pairs))
+
     print('POS/NEG', counts['POS'] / counts['NEG'])
     print('POS/NEU', counts['POS'] / counts['NEU'])
     print('NEG/NEU', counts['NEG'] / counts['NEU'])
     print()
+
+
+def upsample_data(sentence_pairs, labels, target_ratios={'POS': 0.53, 'NEG': 0.21, 'NEU': 0.26}):
+    # one question: should we upsample sentencepairs, where the sentence only occurs once?!
+    print('Upsampling data ...')
+    # print(sentence_pairs, labels)  # is list of pairs -> decide which pair to upsample ...
+
+    # 0. compute indeex subsets for every example
+    # 1. compute how many samples to sample ->
+
+    ix_subsets = {
+        'POS': [],
+        'NEG': [],
+        'NEU': []
+    }
+    ratios_subsets = {
+        'POS': 0,
+        'NEG': 0,
+        'NEU': 0
+    }
+    examples_to_add = {
+        'POS': 0,
+        'NEG': 0,
+        'NEU': 0
+    }
+    n = float(len(labels))
+    for ix, l in enumerate(labels):
+        ix_subsets[l].append(ix)
+        ratios_subsets[l] += (1.0 / n)
+
+    t_keys = target_ratios.keys()
+    tmp = [math.floor(target_ratios[k] * n) - len(ix_subsets[k]) for k in t_keys]
+    class_nothing_to_add = list(t_keys)[tmp.index(min(tmp))]
+    print(t_keys)
+    print(ratios_subsets)
+    print(tmp)
+    print(class_nothing_to_add)
+    # print(ix_subsets)
+    m = len(ix_subsets[class_nothing_to_add]) / target_ratios[class_nothing_to_add]
+    total_to_add = m - n
+    print(n, math.floor(m))
+
+    examples_to_add = {k: math.floor(target_ratios[k] * m - len(ix_subsets[k])) for k in t_keys}
+    print(examples_to_add)  # so we need to add more neutral examples and more positiev ones
+
+    # downsampling would be set 0 the maximum amount of negative ones
+    random.Random(args.seed)
+    # now select all the indices, with replacement because it can be more than double
+    new_samples = []
+    for k in t_keys:
+        new_samples.extend(random.choices(ix_subsets[k], k=examples_to_add[k]))
+    print(len(new_samples))
+
+    # now add all new samples to the dataset and shuffle it
+
+    new_sentence_pairs = copy(sentence_pairs)
+    new_labels = labels.copy()
+
+    for ix in new_samples:
+        new_sentence_pairs.append(copy(sentence_pairs[ix]))
+        new_labels.append(labels[ix])
+
+    random.shuffle(new_sentence_pairs)
+    random.shuffle(new_labels)
+
+    print(len(set(new_sentence_pairs)))
+    print(len(set(sentence_pairs)))
+
+    return new_sentence_pairs, new_labels
 
 
 def export_dataset_to_xml(fn, sentence_pairs, labels):
@@ -84,8 +171,9 @@ def export_dataset_to_xml(fn, sentence_pairs, labels):
         'NEG': 'negative',
         'CONF': 'conflict'
     }
+
     for ix, (sentence, aspectterm) in enumerate(sentence_pairs):
-        #print(sentence)
+        # print(sentence)
         sentiment = labels[ix]
         sentence_el = ET.SubElement(sentences_el, 'sentence')
         sentence_el.set('id', str(ix))
@@ -127,6 +215,7 @@ def export_dataset_to_xml(fn, sentence_pairs, labels):
 
 def save_dataset_to_tsv(fn, data):
     pass
+
 
 sentence_pairs_train_mixed = []
 sentence_pairs_trainsplit_mixed = []
@@ -170,9 +259,21 @@ for fn in args.files:
         labels_dev_mixed += labels_dev
 
         if len(args.files) == 1:
+            if args.upsample:
+                distro_arr = args.upsample.split(' ')
+                pos = float(distro_arr[0])
+                neg = float(distro_arr[1])
+                neu = float(distro_arr[2])
+                assert pos + neg + neu == 1.0, 'upsampling target distribution does not sum to 1'
+
+                target_distro = {'POS': pos, 'NEG': neg, 'NEU': neu}
+                print('Target Sampling Distribution for Training Set:', target_distro)
+                sentence_pairs_train, labels_train = upsample_data(sentence_pairs_train, labels_train, target_ratios=target_distro)
+
             export_dataset_to_xml(args.output_dir + '/train.xml', sentence_pairs_train, labels_train)
             export_dataset_to_xml(args.output_dir + '/dev.xml', sentence_pairs_dev, labels_dev)
             export_dataset_to_xml(args.output_dir + '/train_split.xml', sentence_pairs_trainsplit, labels_trainsplit)
+
     else:
 
         sentence_pairs_test_mixed += sentence_pairs_train
@@ -187,6 +288,7 @@ if len(args.files) > 1:
     if args.istrain:
         export_dataset_to_xml(args.output_dir + '/train.xml', sentence_pairs_train_mixed, labels_train_mixed)
         export_dataset_to_xml(args.output_dir + '/dev.xml', sentence_pairs_dev_mixed, labels_dev_mixed)
-        export_dataset_to_xml(args.output_dir + '/train_split.xml', sentence_pairs_trainsplit_mixed, labels_trainsplit_mixed)
+        export_dataset_to_xml(args.output_dir + '/train_split.xml', sentence_pairs_trainsplit_mixed,
+                              labels_trainsplit_mixed)
     else:
         export_dataset_to_xml(args.output_dir + '/test.xml', sentence_pairs_test_mixed, labels_test_mixed)

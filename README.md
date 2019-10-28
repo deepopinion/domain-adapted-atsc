@@ -114,6 +114,38 @@ Mixed
     "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Laptops_Test_Gold.xml" \
     --output_dir data/transformed/mixed_noconfl --noconfl
 
+New: Upsampling training data for ablation study checking the influence of the labeldistribution on end-performance:
+
+Laptops 
+
+    # Laptop-upsampled->test:
+
+    python prepare_semeval_datasets.py \
+    --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Laptop_Train_v2.xml" \
+    --output_dir data/transformed/laptops_noconfl_uptest \
+    --istrain \
+    --noconfl --upsample "0.534 0.201 0.265" --seed 41
+    
+    python prepare_semeval_datasets.py \
+    --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Laptops_Test_Gold.xml" \
+    --output_dir data/transformed/laptops_noconfl_uptest \
+    --noconfl
+
+Restaurants
+
+    # Restaurants-upsampled->test:
+
+    python prepare_semeval_datasets.py \
+    --files "data/raw/semeval2014/SemEval-2014 ABSA Train Data v2.0 & Annotation Guidelines/Restaurants_Train_v2.xml" \
+    --output_dir data/transformed/restaurants_noconfl_uptest \
+    --istrain \
+    --noconfl --upsample "0.650 0.175 0.175" --seed 41
+    
+    python prepare_semeval_datasets.py \
+    --files "data/raw/semeval2014/SemEval-2014 ABSA Test Data - Gold Annotations/ABSA_Gold_TestData/Restaurants_Test_Gold.xml" \
+    --output_dir data/transformed/restaurants_noconfl_uptest \
+    --noconfl
+
 ## Release of BERT language models finetuned on a specific domain
 
 * [BERT-ADA Laptops](https://drive.google.com/file/d/1I2hOyi120Fwn2cApfVwjaOw782IGjWS8/view?usp=sharing)
