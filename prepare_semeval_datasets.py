@@ -137,11 +137,11 @@ def upsample_data(sentence_pairs, labels, target_ratios={'POS': 0.53, 'NEG': 0.2
     print(examples_to_add)  # so we need to add more neutral examples and more positiev ones
 
     # downsampling would be set 0 the maximum amount of negative ones
-    random.Random(args.seed)
+
     # now select all the indices, with replacement because it can be more than double
     new_samples = []
     for k in t_keys:
-        new_samples.extend(random.choices(ix_subsets[k], k=examples_to_add[k]))
+        new_samples.extend(random.Random(args.seed).choices(ix_subsets[k], k=examples_to_add[k]))
     print(len(new_samples))
 
     # now add all new samples to the dataset and shuffle it
@@ -153,8 +153,8 @@ def upsample_data(sentence_pairs, labels, target_ratios={'POS': 0.53, 'NEG': 0.2
         new_sentence_pairs.append(copy(sentence_pairs[ix]))
         new_labels.append(labels[ix])
 
-    random.shuffle(new_sentence_pairs)
-    random.shuffle(new_labels)
+    random.Random(args.seed).shuffle(new_sentence_pairs)
+    random.Random(args.seed).shuffle(new_labels)
 
     print(len(set(new_sentence_pairs)))
     print(len(set(sentence_pairs)))
