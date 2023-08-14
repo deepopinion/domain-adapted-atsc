@@ -49,7 +49,7 @@ srsly==0.0.7
 terminado==0.8.2
 testpath==0.4.2
 thinc==7.0.8
-tornado==6.0.3
+tornado==6.3.3
 tqdm==4.32.2
 traitlets==4.3.2
 urllib3==1.25.3
